@@ -3,31 +3,31 @@ from openpyxl import Workbook
 
 def birthday_probability(nr_days=365, runs=10000, filename="output_ex17.xlsx"):
     random.seed(42)
-    feesten = [13, 23, 33, 53]
+    parties = [13, 23, 33, 53]
 
     wb = Workbook()
     first_sheet = True
 
-    for feest in feesten:
+    for party in parties:
         array_running_average = []
         array_succes = []
 
         if first_sheet:
             ws = wb.active
-            ws.title = f"feest_{feest}"
+            ws.title = f"party_{party}"
             first_sheet = False
         else:
-            ws = wb.create_sheet(title=f"feest_{feest}")
+            ws = wb.create_sheet(title=f"party_{party}")
 
         ws.append(["Run", "Amount of people", "Succes (1/0)", "Running average"])
 
         for run in range(1, runs + 1):
-            verjaardagen = []
+            birthdays = []
 
-            for people in range(1, feest + 1):
-                verjaardagen.append(random.randint(1, nr_days))
+            for people in range(1, party + 1):
+                birthdays.append(random.randint(1, nr_days))
 
-            if len(verjaardagen) != len(set(verjaardagen)):
+            if len(birthdays) != len(set(birthdays)):
                 array_succes.append(1)
             else:
                 array_succes.append(0)
@@ -35,14 +35,14 @@ def birthday_probability(nr_days=365, runs=10000, filename="output_ex17.xlsx"):
             running_average = sum(array_succes) / run
             array_running_average.append(running_average)
 
-            ws.append([run, feest, array_succes[-1], running_average])
+            ws.append([run, party, array_succes[-1], running_average])
 
-        print(f"Feest met {feest} mensen heeft een kans van {array_running_average[-1]:.4f} dat er 2 mensen op dezelfde dag jarig zijn.")
+        print(f"party with {party} people has a chance of {array_running_average[-1]:.4f} that 2 people share the same birthday.")
 
         ws.append([])
-        ws.append(["Eindkans", array_running_average[-1]])
+        ws.append(["End Probability", array_running_average[-1]])
 
     wb.save(filename)
-    print(f"Resultaten zijn geschreven naar {filename}")
+    print(f"Results written to {filename}")
 
 birthday_probability(runs=10000)
