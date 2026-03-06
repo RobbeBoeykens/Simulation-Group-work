@@ -1,8 +1,8 @@
 import random
 from openpyxl import Workbook
+random.seed(42)
 
 def birthday_probability(nr_days=365, runs=10000, filename="output_ex17.xlsx"):
-    random.seed(42)
     parties = [13, 23, 33, 53]
 
     wb = Workbook()
