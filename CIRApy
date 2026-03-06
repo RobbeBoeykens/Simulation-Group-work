@@ -37,7 +37,7 @@ def birthday_probability(nr_days=365, runs=10000, filename="output_ex17.xlsx"):
 
             ws.append([run, party, array_succes[-1], running_average])
 
-        print(f"party with {party} people has a chance of {array_running_average[-1]:.4f} that 2 people share the same birthday.")
+        print(f"party with {party} people has a chance of {array_running_average[-1]:.4f} that at least 2 people share the same birthday.")
 
         ws.append([])
         ws.append(["End Probability", array_running_average[-1]])
