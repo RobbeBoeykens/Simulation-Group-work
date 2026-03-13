@@ -100,4 +100,4 @@ def machine_simulation(number_periods=1000, runs=20, filename="output_machine_si
     print(f"Results written to {filename}")
 
 
-machine_simulation(number_periods=10000, runs=10000)
+machine_simulation(number_periods=10000, runs=100)
