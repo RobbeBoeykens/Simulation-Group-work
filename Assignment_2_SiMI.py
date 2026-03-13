@@ -13,7 +13,7 @@ def make_cumulative_matrix(matrix):
 
         for value in row:
             running_sum += value
-            cumulative_row.append(running_sum)
+            cumulative_row.append(running_sum) #gewoon SOM?
 
         cumulative_matrix.append(cumulative_row)
 
