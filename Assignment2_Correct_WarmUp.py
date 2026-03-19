@@ -50,7 +50,7 @@ def machine_simulation(number_periods=20000, runs=100, filename="output_machine_
         ws.append([
             "Run",
             "Avg monthly cost", "Running avg",                                          # ← terug toegevoegd
-            f"Avg monthly cost (skip {warmup_periods} warmup)", "Running avg (warmup)"
+            f"Avg monthly cost (skip {warmup_periods} warmup)", f"Running avg (skip {warmup_periods} warmup)"
         ])
 
         ax = axes[idx]
