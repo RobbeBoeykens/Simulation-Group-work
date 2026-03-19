@@ -35,7 +35,9 @@ def machine_simulation(number_periods=20000, runs=100, filename="output_machine_
 
         failure_probs = policy_data["failure_probs"]
         warmup_periods = policy_data["warmup"]
+        total_periods = warmup_periods + number_periods  
 
+        average_costs = []
         average_costs_warmup = []
 
         if first_sheet:
@@ -47,6 +49,7 @@ def machine_simulation(number_periods=20000, runs=100, filename="output_machine_
 
         ws.append([
             "Run",
+            "Avg monthly cost", "Running avg",                                          # ← terug toegevoegd
             f"Avg monthly cost (skip {warmup_periods} warmup)", "Running avg (warmup)"
         ])
 
@@ -58,7 +61,7 @@ def machine_simulation(number_periods=20000, runs=100, filename="output_machine_
             current_state = 0
             period_costs = []
 
-            for period in range(number_periods):
+            for period in range(total_periods):  # ← warmup + number_periods
 
                 p = failure_probs[current_state]
 
@@ -76,14 +79,20 @@ def machine_simulation(number_periods=20000, runs=100, filename="output_machine_
 
                 period_costs.append(cost)
 
+           
+            avg_cost = sum(period_costs) / total_periods
+            average_costs.append(avg_cost)
+            running_avg = sum(average_costs) / run
+
+          
             post_warmup_costs = period_costs[warmup_periods:]
             avg_cost_warmup = sum(post_warmup_costs) / len(post_warmup_costs)
             average_costs_warmup.append(avg_cost_warmup)
             running_avg_warmup = sum(average_costs_warmup) / run
 
-            ws.append([run, avg_cost_warmup, running_avg_warmup])
+            ws.append([run, avg_cost, running_avg, avg_cost_warmup, running_avg_warmup])
 
-            # Plot running average per periode voor de eerste 15 seeds
+          
             if run <= 25:
                 running_avg_per_period = []
                 cumsum = 0
@@ -91,22 +100,24 @@ def machine_simulation(number_periods=20000, runs=100, filename="output_machine_
                     cumsum += cost
                     running_avg_per_period.append(cumsum / (t + 1))
 
-                ax.plot(range(1, number_periods + 1), running_avg_per_period,
+                ax.plot(range(1, total_periods + 1), running_avg_per_period,
                         linewidth=0.8, alpha=0.7, label=f"seed {run}")
 
+        final_avg = sum(average_costs) / runs
         final_avg_warmup = sum(average_costs_warmup) / runs
 
         ws.append([])
-        ws.append(["Final estimate", final_avg_warmup])
+        ws.append(["Final estimate", final_avg, "", final_avg_warmup])
 
-        print(f"{policy_name} | Warmup-adjusted avg: {final_avg_warmup:.4f}")
+        print(f"{policy_name} | Full avg: {final_avg:.4f} | Warmup-adjusted avg: {final_avg_warmup:.4f}")
 
         ax.axvline(x=warmup_periods, color="black", linestyle="--", linewidth=1.5, label=f"Warmup: {warmup_periods}")
         ax.axhline(y=final_avg_warmup, color="red", linestyle="--", linewidth=1.2, label=f"Final avg: {final_avg_warmup:.1f}")
         ax.set_title(f"{policy_name}", fontweight="bold")
-        ax.set_xlabel("Periode")
-        ax.set_ylabel("Running gem. kostprijs")
-        ax.legend(fontsize=6, ncol=2)
+        ax.set_xlabel("Period")
+        ax.set_ylabel("Running average cost")
+        ax.legend(fontsize=6, ncol=2, loc = "lower right")
+    
         ax.grid(True, alpha=0.3)
 
     wb.save(filename)
