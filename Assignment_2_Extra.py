@@ -10,7 +10,7 @@ def run_simulation(failure_probs, warmup_periods, number_periods, runs, downtime
     average_costs_warmup = []
 
     for run in range(1, runs + 1):
-        rng = random.Random(run)  # ← per-run seed zoals in nieuwe code
+        rng = random.Random(run)
         current_state = 0
         post_warmup_cost = 0
 
@@ -38,12 +38,12 @@ def run_simulation(failure_probs, warmup_periods, number_periods, runs, downtime
 
 
 def machine_simulation_sensitivity(
-    number_periods=20000,  # ← aangepast
+    number_periods=20000, 
     runs=100,
     filename="output_sensitivity.xlsx"
 ):
     policies = {
-        "policy_0": {"failure_probs": [0.1, 0.2, 0.5, None],     "warmup": 3500},  # ← nieuwe warmups
+        "policy_0": {"failure_probs": [0.1, 0.2, 0.5, None],     "warmup": 3500}, 
         "policy_1": {"failure_probs": [0.1, 0.2, 0.5, "replace"], "warmup": 4000},
         "policy_2": {"failure_probs": [0.1, 0.2, "replace"],      "warmup": 3000},
         "policy_3": {"failure_probs": [0.1, "replace"],           "warmup": 3500},

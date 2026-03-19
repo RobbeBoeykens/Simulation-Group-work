@@ -49,7 +49,7 @@ def machine_simulation(number_periods=20000, runs=100, filename="output_machine_
 
         ws.append([
             "Run",
-            "Avg monthly cost", "Running avg",                                          # ← terug toegevoegd
+            "Avg monthly cost", "Running avg",                                        
             f"Avg monthly cost (skip {warmup_periods} warmup)", f"Running avg (skip {warmup_periods} warmup)"
         ])
 
@@ -61,7 +61,7 @@ def machine_simulation(number_periods=20000, runs=100, filename="output_machine_
             current_state = 0
             period_costs = []
 
-            for period in range(total_periods):  # ← warmup + number_periods
+            for period in range(total_periods):
 
                 p = failure_probs[current_state]
 
