@@ -698,7 +698,7 @@ Simulation.runSimulations = runSimulations_patched
 
 
 # --- Run ---
-sim = Simulation("Big Assignment/Inputs/input-S1-14.txt", 2000, 30, 1)
+sim = Simulation("Big Assignment/Inputs/input-S1-14.txt", 5000, 30, 2)
 sim.runSimulations()
 
 
