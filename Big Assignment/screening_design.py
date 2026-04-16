@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+plt.switch_backend("Agg")
 import numpy as np
 import random
 from simulation import Simulation
@@ -75,7 +76,6 @@ weeks = np.arange(1, sim.W + 1)
 
 # Cumulatief moving average per replicatie: MA[w] = mean(OV[0..w])
 cumavg = np.cumsum(trajectories, axis=1) / weeks  # shape: (R, W)
-mean_cumavg = cumavg.mean(axis=0)
 
 fig, ax = plt.subplots(figsize=(14, 6))
 
@@ -84,20 +84,13 @@ for r in range(sim.R):
     ax.plot(weeks, cumavg[r], alpha=0.5, linewidth=1.2,
             color=colors[r], label=f"Rep {r}")
 
-ax.plot(weeks, mean_cumavg, color="black", linewidth=2.5,
-        linestyle="--", label="Gemiddelde over replicaties")
-
-ax.set_title("Cumulatief moving average van OV per replicatie  —  S1-14")
-ax.set_xlabel("Week (observatie)")
-ax.set_ylabel("Cumulatief gemiddelde OV")
-ax.legend(fontsize=8, ncol=2)
+ax.set_title("Moving average OV per replication  —  S1-14")
+ax.set_xlabel("Weak (observation)")
+ax.set_ylabel("Cumulative average OV")
+ax.legend(fontsize=8, ncol=2, title="Replications")
 ax.grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.savefig("ov_cumavg_S1-14.png", dpi=150)
 plt.show()
-
-plt.tight_layout()
-plt.savefig("ov_trajectories_S1-14.png", dpi=150)
-plt.show()
-print("Plot opgeslagen als ov_trajectories_S1-14.png")
+print("Plot opgeslagen als ov_cumavg_S1-14.png")
