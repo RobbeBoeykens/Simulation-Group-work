@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-plt.switch_backend("Agg")
 import numpy as np
 import random
 from simulation import Simulation
@@ -39,6 +38,7 @@ def runSimulations_patched(self):
 
     print("r \t elAppWT \t elScanWT \t urScanWT \t OT \t OV \n")
     totals = {"elAppWT": 0, "elScanWT": 0, "urScanWT": 0, "OT": 0, "OV": 0}
+    OV_values = []
 
     for r in range(self.R):
         self.resetSystem()
@@ -53,20 +53,25 @@ def runSimulations_patched(self):
         totals["urScanWT"] += self.avgUrgentScanWt
         totals["OT"]       += self.avgOT
         totals["OV"]       += ov
+        OV_values.append(ov)
 
         print(f"{r} \t {self.avgElectiveAppWT:.2f} \t\t {self.avgElectiveScanWT:.5f} \t "
               f"{self.avgUrgentScanWt:.2f} \t\t {self.avgOT:.2f} \t {ov:.2f}")
 
     R = self.R
     print("--------------------------------------------------------------------------------")
+    avg_OV = totals['OV']/R
     print(f"AVG: \t {totals['elAppWT']/R:.2f} \t\t {totals['elScanWT']/R:.5f} \t "
-          f"{totals['urScanWT']/R:.2f} \t\t {totals['OT']/R:.2f} \t {totals['OV']/R:.2f} \n")
+          f"{totals['urScanWT']/R:.2f} \t\t {totals['OT']/R:.2f} \t {avg_OV:.2f}")
+
+    OV_stdev = np.std(OV_values, ddof=1)
+    print(f"STDEV OV: \t {OV_stdev:.4f}\n")
 
 Simulation.runSimulations = runSimulations_patched
 
 
 # --- Run ---
-sim = Simulation("Big Assignment/Inputs/input-S1-14.txt", 100, 5, 1)
+sim = Simulation("Big Assignment/Inputs/input-S1-14.txt", 2000, 30, 1)
 sim.runSimulations()
 
 
@@ -91,6 +96,5 @@ ax.legend(fontsize=8, ncol=2, title="Replications")
 ax.grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.savefig("ov_cumavg_S1-14.png", dpi=150)
 plt.show()
 print("Plot opgeslagen als ov_cumavg_S1-14.png")
