@@ -492,13 +492,6 @@ class Simulation:
         self.avgOT /= (self.D * self.W)
 
     def setWeekSchedule(self) -> None:
-        """
-        This method sets a cyclic slot schedule based on a given input file and applied rules.
-
-        @Students, if you choose to use Python, make sure to implement the required rules here.
-        """
-        # read file:
-        # NOTE we assume utf-8-sig, as many students will probably be working with MS
         with open(self.inputFileName, 'r', encoding='utf-8-sig') as r:
             slotTypes = list(map(lambda x: re.findall('[0-9]', x), r.readlines()))
             assert len(slotTypes) == 32, "Error: there should be 32 slots (lines) in the file"
@@ -516,28 +509,63 @@ class Simulation:
 
         for d in range(self.D):
             time = 8
+            
+            # Rule 2: tellers per sessie (ochtend/namiddag)
+            session_elective_count = 0   # aantal electieve slots gezien in huidige sessie
+            session_start_time = 8       # starttijd van huidige sessie
+            in_afternoon = False
+            
+            # Rule 3: teller per blok
+            B = 2
+            block_elective_count = 0     # positie binnen huidig blok
+            block_start_time = None      # starttijd van huidig blok
+            
             for s in range(self.S):
+                # Detecteer overgang naar namiddag → reset sessietellers
+                if time == 13 and not in_afternoon:
+                    in_afternoon = True
+                    session_elective_count = 0
+                    session_start_time = 13
+                    block_elective_count = 0
+                    block_start_time = None
+
                 # start time slot
                 self.weekSchedule[d][s].startTime = time
+
                 # appointment time slot
-                if (self.weekSchedule[d][s].slotType != 1):
+                if self.weekSchedule[d][s].slotType != 1:
                     self.weekSchedule[d][s].appTime = time
                 else:
-                    if (self.rule == 1):
-                        # FIFO
+                    if self.rule == 1:
+                        # Plain FCFS
                         self.weekSchedule[d][s].appTime = time
-                    elif (self.rule == 2):
-                        # TODO: Bailey-Welch rule
-                        pass
-                    elif (self.rule == 3):
-                        # TODO: Blocking rule
-                        pass
-                    elif (self.rule == 4):
-                        # TODO: Benchmark rule
-                        pass
+
+                    elif self.rule == 2:
+                        # Bailey-Welch: eerste K=2 electieve patiënten per sessie
+                        # krijgen appTime = start van de sessie
+                        # de rest krijgt appTime = startTime - 1 slot
+                        K = 2
+                        if session_elective_count < K:
+                            self.weekSchedule[d][s].appTime = session_start_time
+                        else:
+                            self.weekSchedule[d][s].appTime = time - self.slotLength
+                        session_elective_count += 1
+
+                    elif self.rule == 3:
+                        # Blocking: blokken van B=2 electieve slots
+                        # alle patiënten in hetzelfde blok → appTime = start van het blok
+                        if block_elective_count % B == 0:
+                            block_start_time = time  # nieuw blok begint
+                        self.weekSchedule[d][s].appTime = block_start_time
+                        block_elective_count += 1
+
+                    elif self.rule == 4:
+                        # Benchmark: appTime = startTime - alpha * stdev
+                        alpha = 0.5
+                        self.weekSchedule[d][s].appTime = time - alpha * (self.stdevElectiveDuration / 60)
+
                 time += self.slotLength
-                if (time == 12):
-                    # Lunchbreak, so skip ahead
+                if time == 12:
                     time = 13
 
     def resetSystem(self) -> None:
