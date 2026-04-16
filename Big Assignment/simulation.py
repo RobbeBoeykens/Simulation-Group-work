@@ -597,5 +597,5 @@ class Simulation:
 
 
 if __name__ == "__main__":
-    sim = Simulation("../input-S1-14.txt", 100, 1000, 1)
+    sim = Simulation("Big Assignment/input-S1-14.txt", 100, 1000, 1)
     sim.runSimulations()
