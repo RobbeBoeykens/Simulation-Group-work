@@ -9,29 +9,6 @@ import re
 import random
 from functools import cmp_to_key
 from openpyxl import Workbook
-def writeWeeklyObjectiveValuesToExcel(self, weeklyOVPerReplication: list[list[float]], filename: str = "test_it.xlsx") -> None:
-        """
-        Write the weekly objective values to Excel with weeks in the first column
-        and one column per replication.
-
-        Args:
-            weeklyOVPerReplication (list[list[float]]): objective values per replication and week
-            filename (str): output Excel filename
-        """
-        workbook = Workbook()
-        worksheet = workbook.active
-        worksheet.title = "Weekly OV"
-
-        header = ["Week"] + [f"Replication {r + 1}" for r in range(len(weeklyOVPerReplication))]
-        worksheet.append(header)
-
-        for week in range(self.W):
-            row = [week + 1]
-            for replication in range(len(weeklyOVPerReplication)):
-                row.append(weeklyOVPerReplication[replication][week])
-            worksheet.append(row)
-
-        workbook.save(filename)
 
 from helper import Exponential_distribution, Normal_distribution, Bernouilli_distribution
 from slot import Slot
@@ -175,6 +152,30 @@ class Simulation:
         self.movingAvgElectiveScanWT = list()
         self.movingAvgUrgentScanWT = list()
         self.movingAvgOT = list()
+
+    def writeWeeklyObjectiveValuesToExcel(self, weeklyOVPerReplication: list[list[float]], filename: str = "test_it.xlsx") -> None:
+        """
+        Write the weekly objective values to Excel with weeks in the first column
+        and one column per replication.
+
+        Args:
+            weeklyOVPerReplication (list[list[float]]): objective values per replication and week
+            filename (str): output Excel filename
+        """
+        workbook = Workbook()
+        worksheet = workbook.active
+        worksheet.title = "Weekly OV"
+
+        header = ["Week"] + [f"Replication {r + 1}" for r in range(len(weeklyOVPerReplication))]
+        worksheet.append(header)
+
+        for week in range(self.W):
+            row = [week + 1]
+            for replication in range(len(weeklyOVPerReplication)):
+                row.append(weeklyOVPerReplication[replication][week])
+            worksheet.append(row)
+
+        workbook.save(filename)
 
     def generatePatients(self) -> None:
         """
@@ -656,5 +657,5 @@ class Simulation:
 
 
 if __name__ == "__main__":
-    sim = Simulation("Big Assignment/Inputs/input-S1-14.txt", 100, 1000, 1)
+    sim = Simulation("Big Assignment/Inputs/input-S3-16.txt", 2000, 20, 3)
     sim.runSimulations()
