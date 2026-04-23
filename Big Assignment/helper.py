@@ -9,7 +9,7 @@ But why would you, if this is more fun? ;)
 import random
 import math
 
-def Exponential_distribution(lambda_value) -> float:
+def Exponential_distribution(lambda_value, both = False) -> float:
     """Exponential distribution
 
     Args:
@@ -21,7 +21,13 @@ def Exponential_distribution(lambda_value) -> float:
     if j1 == 0:
         j1 = 0.0001
     j2 = -math.log(j1) / lambda_value
-    return j2
+
+    # I changed the exponential distribution, we can choose to return both j2 and 1 - j2
+    if both == False:
+        return j2
+    else:
+        return j2, 1-j2
+    
 
 def Normal_distribution(mean, stdev) -> float:
     """Normal distribution.
