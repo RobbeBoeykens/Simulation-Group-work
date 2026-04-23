@@ -20,13 +20,16 @@ def Exponential_distribution(lambda_value, both = False) -> float:
     j1 = random.randint(0, 1000) / 1000
     if j1 == 0:
         j1 = 0.0001
+        
+    j3 = 1- j1
     j2 = -math.log(j1) / lambda_value
 
+    j4 = -math.log(j3) / lambda_value
     # I changed the exponential distribution, we can choose to return both j2 and 1 - j2
     if both == False:
         return j2
     else:
-        return j2, 1-j2
+        return j2, j4
     
 
 def Normal_distribution(mean, stdev) -> float:
