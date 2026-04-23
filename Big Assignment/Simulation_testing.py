@@ -6,10 +6,10 @@ from simulation import Simulation
 # ============================================================
 # INSTELLINGEN — enkel hier aanpassen
 # ============================================================
-INPUT_FILE = "Big Assignment/Inputs/input-S1-14.txt"
-W_TOTAL    = 500
+INPUT_FILE = "Big Assignment/Inputs/input-S3-16.txt"
+W_TOTAL    = 5000
 R_PILOT    = 30
-RULE       = 1
+RULE       = 3
 
 # ============================================================
 # PATCH: week-per-week OV bijhouden
