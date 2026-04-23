@@ -22,6 +22,8 @@ def Exponential_distribution(lambda_value, both = False) -> float:
         j1 = 0.0001
         
     j3 = 1- j1
+    if j3 == 0:
+        j3 = 0.0001
     j2 = -math.log(j1) / lambda_value
 
     j4 = -math.log(j3) / lambda_value
