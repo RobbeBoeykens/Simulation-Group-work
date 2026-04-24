@@ -1,3 +1,4 @@
+
 import math
 import os
 import random
@@ -6,6 +7,9 @@ import openpyxl
 from openpyxl import load_workbook
 
 from simulation import Simulation
+
+print(os.getcwd())
+
 CONFIGURATIONS = [
     [12, 3, 1],
     [16, 1, 2],
@@ -21,9 +25,11 @@ CONFIGURATIONS = [
 
 WARMUP_WEEKS: int = 50     
 RUN_WEEKS:    int = 483     
-R:            int = 16     
-EXCEL_PATH:   str = "Excel Files/replications_final_configurations_before_antithetic.xlsx"
-INPUT_DIR:    str = "Inputs"
+R:            int = 30     
+
+EXCEL_PATH:   str = "Excel Files/replications.xlsx"
+INPUT_DIR:    str = "Big Assignment/Inputs"
+
 def safe_avg(values: list[float]) -> float:
     valid = [v for v in values if math.isfinite(v)]
     return sum(valid) / len(valid) if valid else 0.0
