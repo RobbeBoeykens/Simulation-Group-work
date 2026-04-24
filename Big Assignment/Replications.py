@@ -11,23 +11,21 @@ from simulation import Simulation
 print(os.getcwd())
 
 CONFIGURATIONS = [
-    [12, 3, 1],
-    [16, 1, 2],
-    [14, 2, 4],
-    [10, 2, 3],
-    [20, 2, 1],
-    [16, 3, 3],
-    [14, 3, 2],
-    [14, 1, 1],
-    [10, 1, 2],
-    [20, 1, 4],
+    (14, 1, 1),
+    (16, 3, 3),
+    (16, 1, 2),
+    (14, 2, 4),
+    (12, 3, 1),
+    (10, 1, 2),
+    (14, 3, 2),
+    (10, 2, 3),
 ]
 
 WARMUP_WEEKS: int = 50     
 RUN_WEEKS:    int = 483     
 R:            int = 30     
 
-EXCEL_PATH:   str = "Excel Files/replications.xlsx"
+EXCEL_PATH:   str = "Big Assignment/Excel Files/replications.xlsx"
 INPUT_DIR:    str = "Big Assignment/Inputs"
 
 def safe_avg(values: list[float]) -> float:
