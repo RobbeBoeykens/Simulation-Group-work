@@ -25,7 +25,7 @@ DESIGNS = [
 WARMUP_WEEKS = 50
 RUN_WEEKS    = 483
 TOTAL_WEEKS  = WARMUP_WEEKS + RUN_WEEKS
-R            = 30
+R            = 16
 OUTPUT_EXCEL = "Big Assignment/Excel Files/control_variates.xlsx"
 INPUT_DIR    = "Big Assignment/Inputs"
 
