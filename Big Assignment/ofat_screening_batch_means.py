@@ -436,6 +436,16 @@ def main():
 
         plot_path = plot_experiment(exp_key, exp, means, half_ws, exp["levels"])
         print(f"\n  Plot saved: {plot_path}")
+        # Extra ingezoomde plot voor experiment A: alleen 10..18
+        if exp_key == "A_urgent_slots":
+            zoom_levels = [l for l in exp["levels"] if 10 <= l <= 18]
+            zoom_idx = [exp["levels"].index(l) for l in zoom_levels]
+            zoom_means = [means[i] for i in zoom_idx]
+            zoom_hws = [half_ws[i] for i in zoom_idx]
+            zoom_exp = {"factor_name": exp["factor_name"]}
+            zoom_path = plot_experiment("A_urgent_slots_zoom", zoom_exp,
+                                        zoom_means, zoom_hws, zoom_levels)
+            print(f"  Zoom plot saved: {zoom_path}")
 
     wb.save(OUT_XLSX)
     with open(OUT_CSV, "w", encoding="utf-8") as f:
