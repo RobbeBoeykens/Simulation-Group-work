@@ -22,8 +22,8 @@ CONFIGURATIONS = [
 ]
 
 WARMUP_WEEKS: int = 50     
-RUN_WEEKS:    int = 483     
-R:            int = 30     
+RUN_WEEKS:    int = 566     
+R:            int = 20    
 
 EXCEL_PATH:   str = "Big Assignment/Excel Files/replications.xlsx"
 INPUT_DIR:    str = "Big Assignment/Inputs"
