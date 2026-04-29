@@ -336,6 +336,8 @@ def main():
         X_av_all     = []
         YE_av_all    = []
         YU_av_all    = []
+        YE_n_all     = []
+        YU_n_all     = []
 
         for r in range(R):
             # Step 1a: normal run  (seed r, U drawn as-is)
@@ -359,6 +361,8 @@ def main():
             X_av_all.append(xi_av)
             YE_av_all.append(ye_av)
             YU_av_all.append(yu_av)
+            YE_n_all.append(ye_n)
+            YU_n_all.append(yu_n)
 
             results.append({
                 "X_normal": xi_n,
@@ -398,18 +402,27 @@ def main():
         mean_av   = float(np.mean(X_av));         std_av   = float(np.std(X_av,         ddof=1))
         mean_comb = float(np.mean(X_combined));   std_comb = float(np.std(X_combined,   ddof=1))
 
-        # control-only baseline (no antithetic) for separate comparison row
-        X_cv_only = X_raw - c_E * (YE_av - v_E) - c_U * (YU_av - v_U)
-        mean_cvo  = float(np.mean(X_cv_only));    std_cvo  = float(np.std(X_cv_only,    ddof=1))
+        # control-only baseline (pure CV op de RAW normale runs, matcht control_variates.py)
+        YE_n = np.array(YE_n_all, dtype=float)
+        YU_n = np.array(YU_n_all, dtype=float)
+
+        var_YE_n = float(np.var(YE_n, ddof=1))
+        var_YU_n = float(np.var(YU_n, ddof=1))
+        c_E_cv = 0.0 if var_YE_n == 0 else float(np.cov(X_raw, YE_n, ddof=1)[0, 1] / var_YE_n)
+        c_U_cv = 0.0 if var_YU_n == 0 else float(np.cov(X_raw, YU_n, ddof=1)[0, 1] / var_YU_n)
+
+        X_cv_only = X_raw - c_E_cv * (YE_n - v_E) - c_U_cv * (YU_n - v_U)
+        mean_cvo  = float(np.mean(X_cv_only))
+        std_cvo   = float(np.std(X_cv_only, ddof=1))
 
         ci_raw  = 1.96 * std_raw  / np.sqrt(R)
         ci_av   = 1.96 * std_av   / np.sqrt(R)
         ci_cv   = 1.96 * std_cvo  / np.sqrt(R)
         ci_comb = 1.96 * std_comb / np.sqrt(R)
 
-        red_av   = 100.0 * (1.0 - std_av   / std_raw) if std_raw > 0 else 0.0
-        red_cv   = 100.0 * (1.0 - std_cvo  / std_raw) if std_raw > 0 else 0.0
-        red_comb = 100.0 * (1.0 - std_comb / std_raw) if std_raw > 0 else 0.0
+        red_av   = 100.0 * (1.0 - (std_av   / std_raw) ** 2) if std_raw > 0 else 0.0
+        red_cv   = 100.0 * (1.0 - (std_cvo  / std_raw) ** 2) if std_raw > 0 else 0.0
+        red_comb = 100.0 * (1.0 - (std_comb / std_raw) ** 2) if std_raw > 0 else 0.0
 
         print(f"\n  v_E={v_E:.1f}  v_U={v_U:.1f}  c_E={c_E:.6f}  c_U={c_U:.6f}")
         print(f"  Raw        : mean={mean_raw:.5f}  std={std_raw:.5f}  CI±{ci_raw:.5f}")

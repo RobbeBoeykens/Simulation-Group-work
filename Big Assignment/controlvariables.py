@@ -338,7 +338,7 @@ def main():
         mean_cv  = float(np.mean(X_cv)); std_cv  = float(np.std(X_cv, ddof=1))
         ci_raw   = 1.96 * std_raw / np.sqrt(R)
         ci_cv    = 1.96 * std_cv  / np.sqrt(R)
-        reduction = 100 * (1 - std_cv / std_raw) if std_raw > 0 else 0.0
+        reduction = 100 * (1 - (std_cv / std_raw) ** 2) if std_raw > 0 else 0.0
 
         print(f"\n  v_E={v_E:.1f}  v_U={v_U:.1f}")
         print(f"  c_E={c_E:.6f}  c_U={c_U:.6f}")
