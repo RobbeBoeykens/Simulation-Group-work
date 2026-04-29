@@ -24,9 +24,9 @@ DESIGNS = [
 ]
 
 WARMUP_WEEKS = 50
-RUN_WEEKS    = 483
+RUN_WEEKS    = 1019
 TOTAL_WEEKS  = WARMUP_WEEKS + RUN_WEEKS
-R            = 16
+R            = 8
 OUTPUT_EXCEL = "Big Assignment/Excel Files/combined_variance_reduction.xlsx"
 INPUT_DIR    = "Big Assignment/Inputs"
 
