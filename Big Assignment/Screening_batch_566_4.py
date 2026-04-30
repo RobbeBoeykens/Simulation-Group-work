@@ -19,7 +19,7 @@ from simulation import Simulation
 # Factor 1 = number of urgent slots
 # Factor 2 = timing strategy for urgent slots
 # Factor 3 = appointment scheduling rule
-OUTPUT_EXCEL = "Big Assignment/Excel Files/Screening_batch_566_4.xlsx"
+OUTPUT_EXCEL = "Big Assignment/Excel Files/Screening_batch_566_4_1.xlsx"
 
 FACTOR_LEVELS = {
     "urgent_slots": {"-": 14, "+": 16},
@@ -420,6 +420,7 @@ def calculate_screening_effects(batch_results):
             "e12_urgent_strategy": effect(["F1", "F2"]),
             "e13_urgent_rule": effect(["F1", "F3"]),
             "e23_strategy_rule": effect(["F2", "F3"]),
+            "e123": effect(["F1", "F2", "F3"]),
         }
         rows.append(row)
 
@@ -434,6 +435,7 @@ def summarize_effects(effect_rows):
         "e12_urgent_strategy",
         "e13_urgent_rule",
         "e23_strategy_rule",
+        "e123",
     ]
     summary = []
     for key in effect_keys:
@@ -519,10 +521,10 @@ def write_screening_design_sheet(wb, design_results):
 def write_screening_effects_sheet(wb, effect_rows, effect_summary):
     ws = wb.create_sheet(title="Screening effects", index=1)
 
-    for col, w in enumerate([12, 18, 18, 18, 22, 22, 22], start=1):
+    for col, w in enumerate([12, 18, 18, 18, 22, 22, 22, 22], start=1):
         ws.column_dimensions[ws.cell(row=1, column=col).column_letter].width = w
 
-    ws.merge_cells("A1:G1")
+    ws.merge_cells("A1:H1")
     c = ws["A1"]
     c.value = "Main and Interaction Effects per Batch"
     c.font = Font(name="Arial", bold=True, color="FFFFFF", size=12)
@@ -538,6 +540,7 @@ def write_screening_effects_sheet(wb, effect_rows, effect_summary):
         "e12 urgent×strategy",
         "e13 urgent×rule",
         "e23 strategy×rule",
+        "e123",
     ]
     for col, text in enumerate(headers, start=1):
         cell = ws.cell(row=3, column=col)
@@ -555,6 +558,7 @@ def write_screening_effects_sheet(wb, effect_rows, effect_summary):
         "e12_urgent_strategy",
         "e13_urgent_rule",
         "e23_strategy_rule",
+        "e123",
     ]
     for row_idx, row in enumerate(effect_rows, start=4):
         for col, key in enumerate(keys, start=1):
@@ -591,6 +595,7 @@ def write_screening_effects_sheet(wb, effect_rows, effect_summary):
         "e12_urgent_strategy": "e12 urgent × strategy",
         "e13_urgent_rule": "e13 urgent × rule",
         "e23_strategy_rule": "e23 strategy × rule",
+        "e123": "e123 three-way",
     }
     for row_idx, item in enumerate(effect_summary, start=summary_start + 2):
         values = [
@@ -812,6 +817,27 @@ def write_screening_plots_sheet(wb, design_results):
                 chart_anchor,
                 show_legend=True,
             )
+
+    # ------------------------------------------------------------
+    # 3-WAY INTERACTION VISUALIZATION
+    # ------------------------------------------------------------
+    row_3way = 110
+
+    ws.cell(row=row_3way, column=1).value = "THREE-WAY INTERACTION"
+    ws.cell(row=row_3way, column=1).font = WHITE_FONT
+    ws.cell(row=row_3way, column=1).fill = BLUE_FILL
+    ws.cell(row=row_3way, column=1).alignment = CENTER
+    ws.cell(row=row_3way, column=1).border = THIN_BORDER
+
+    # We visualize this as two interaction plots (like before),
+    # but explicitly labelled as showing a 3-way interaction structure.
+
+    ws.cell(row=row_3way + 1, column=1).value = (
+        "3-way interaction is interpreted by comparing the two 2-way interaction plots above. "
+        "If the interaction pattern changes when the third factor switches from '-' to '+', "
+        "a 3-way interaction is present."
+    )
+    ws.cell(row=row_3way + 1, column=1).alignment = LEFT
 
     ws.freeze_panes = "A3"
 
