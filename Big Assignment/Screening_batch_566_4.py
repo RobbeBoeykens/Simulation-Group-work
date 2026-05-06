@@ -19,12 +19,12 @@ from simulation import Simulation
 # Factor 1 = number of urgent slots
 # Factor 2 = timing strategy for urgent slots
 # Factor 3 = appointment scheduling rule
-OUTPUT_EXCEL = "Big Assignment/Excel Files/Screening_batch_566_4_1_13_16.xlsx"
+OUTPUT_EXCEL = "Big Assignment/Excel Files/Screening_batch_566_8_10_13_extra.xlsx"
 
 FACTOR_LEVELS = {
-    "urgent_slots": {"-": 13, "+": 16},
-    "strategy": {"-": 1, "+": 2},
-    "rule": {"-": 1, "+": 2},
+    "urgent_slots": {"-": 10, "+": 13},
+    "strategy": {"-": 2, "+": 3},
+    "rule": {"-": 2, "+": 4},
 }
 
 FACTOR_NAMES = ["urgent_slots", "strategy", "rule"]
@@ -68,7 +68,7 @@ def build_screening_designs():
 DESIGNS = build_screening_designs()
 
 WARMUP_WEEKS = 50      # warmup period (bepaald via Welch)
-L            = 4      # aantal batches
+L            = 8      # aantal batches
 
 # Batch lengte:
 # Slide 2: "Find L such that |Cov(Xi, Xi+L)| ≈ 0, batch length = 5L"

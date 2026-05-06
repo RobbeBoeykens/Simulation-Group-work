@@ -18,15 +18,18 @@ OUTPUT_EXCEL = "Big Assignment/Excel Files/All_pairwise_comparison.xlsx"
 INPUT_DIR = "Big Assignment/Inputs"
 
 DESIGNS = [
-    {"name": "a1", "urgent_slots": 13, "strategy": 2, "rule": 1},
-    {"name": "a2", "urgent_slots": 14, "strategy": 3, "rule": 4},
-    {"name": "a3", "urgent_slots": 12, "strategy": 3, "rule": 3},
-    {"name": "a4", "urgent_slots": 13, "strategy": 2, "rule": 2},
+    {"name": "a1", "urgent_slots": 12, "strategy": 2, "rule": 4},
+    {"name": "a2", "urgent_slots": 13, "strategy": 2, "rule": 4},
+    {"name": "a3", "urgent_slots": 14, "strategy": 2, "rule": 4},
+    {"name": "a4", "urgent_slots": 12, "strategy": 3, "rule": 4},
+    {"name": "a5", "urgent_slots": 13, "strategy": 3, "rule": 4},
+    {"name": "a6", "urgent_slots": 14, "strategy": 3, "rule": 4},
 ]
 
-# Number of independent replications per design.
-# NOTE: Volgens cursus N > 25 voor steady-state replication method.
-N_REPLICATIONS = 4
+#
+# One long steady-state trajectory per design.
+# The batches themselves become the observations.
+N_REPLICATIONS = 1
 
 # Simulation length.
 WARMUP_WEEKS = 50
@@ -34,12 +37,12 @@ WARMUP_WEEKS = 50
 # Batch mean settings.
 # First estimate the autocorrelation lag L_ac with a pilot run.
 # Then set the batch length M = 5 * L_ac, exactly like in the batch mean file.
-BATCHES_PER_REPLICATION = 4
+BATCHES_PER_REPLICATION = 8
 PILOT_WEEKS = 2000
 FORCE_M = None  # None = automatic M from autocorrelation; int = fixed M
 
-# Common random numbers: in replication r, all four designs use the same seed.
-# This makes the pairwise differences less noisy.
+# One common seed for the single long trajectory.
+# All designs use the same random stream (CRN).
 BASE_SEED = 10_000
 
 # Overall confidence level voor de family of pairwise comparisons.
@@ -487,8 +490,8 @@ def write_designs_sheet(wb, individual_confidence, n_pairs, batch_info_by_design
 
     parameters = [
         ("Warmup weeks", WARMUP_WEEKS),
-        ("Replications", N_REPLICATIONS),
-        ("Batches per replication", BATCHES_PER_REPLICATION),
+        ("Long trajectories", N_REPLICATIONS),
+        ("Batches per trajectory", BATCHES_PER_REPLICATION),
         ("Batch length", "Estimated per design: M = 5 * L_ac"),
         ("Pilot weeks after warmup", PILOT_WEEKS),
         ("Base seed", BASE_SEED),
@@ -522,7 +525,7 @@ def write_batch_details_sheet(wb, batch_rows, pair_names):
 
     ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(headers))
     title = ws.cell(row=1, column=1)
-    title.value = "Batch Mean Observations Used for Pairwise Differences"
+    title.value = "Batch Mean Observations from the Long Steady-State Trajectory"
     title.font = Font(name="Arial", bold=True, color="FFFFFF", size=12)
     title.fill = BLUE_FILL
     title.alignment = CENTER
@@ -623,10 +626,10 @@ def write_variance_reduction_sheet(wb, vr_rows):
     ws.freeze_panes = "A4"
 
 
-def write_replications_sheet(wb, replication_rows, pair_names):
+def write_replications_sheet(wb, batch_rows, pair_names):
     ws = wb.create_sheet("Pairwise replications", 1)
 
-    headers = ["Replication"]
+    headers = ["Batch"]
     headers += [f"J({design['name']})" for design in DESIGNS]
     headers += [f"J({left}) - J({right})" for left, right in pair_names]
 
@@ -635,7 +638,7 @@ def write_replications_sheet(wb, replication_rows, pair_names):
 
     ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(headers))
     title = ws.cell(row=1, column=1)
-    title.value = "Raw Replication Values for All Pairwise Differences"
+    title.value = "Batch Mean Objective Values and Pairwise Differences"
     title.font = Font(name="Arial", bold=True, color="FFFFFF", size=12)
     title.fill = BLUE_FILL
     title.alignment = CENTER
@@ -644,11 +647,11 @@ def write_replications_sheet(wb, replication_rows, pair_names):
     for col, header in enumerate(headers, start=1):
         style_header(ws.cell(row=3, column=col), header)
 
-    for row_idx, row in enumerate(replication_rows, start=4):
+    for row_idx, row in enumerate(batch_rows, start=4):
         zebra = GREY_FILL if row_idx % 2 == 0 else None
-        values = [row["replication"]]
-        values += [row["objectives"][design["name"]] for design in DESIGNS]
-        values += [row["differences"][(left, right)] for left, right in pair_names]
+        values = [row["batch"]]
+        values += [row["batch_objectives"][design["name"]] for design in DESIGNS]
+        values += [row["batch_differences"][(left, right)] for left, right in pair_names]
 
         for col, value in enumerate(values, start=1):
             style_value(
@@ -660,7 +663,7 @@ def write_replications_sheet(wb, replication_rows, pair_names):
                 align=CENTER if col == 1 else RIGHT,
             )
 
-    avg_row = 4 + len(replication_rows)
+    avg_row = 4 + len(batch_rows)
     style_value(ws.cell(row=avg_row, column=1), "AVG", fill=BLUE_FILL, bold=True, align=CENTER)
     ws.cell(row=avg_row, column=1).font = WHITE_FONT
 
@@ -694,6 +697,16 @@ def write_summary_sheet(wb, difference_values, individual_confidence):
     title.fill = BLUE_FILL
     title.alignment = CENTER
     title.border = THIN_BORDER
+    ws.merge_cells("A2:H2")
+    explanation = ws["A2"]
+    explanation.value = (
+        "Each design is simulated as one long steady-state trajectory. "
+        "After warmup deletion, the trajectory is divided into batches. "
+        "The batch means are treated as the observations for the pairwise comparisons."
+    )
+    explanation.font = REG_FONT
+    explanation.alignment = LEFT
+    explanation.border = THIN_BORDER
 
     headers = [
         "Comparison",
@@ -772,10 +785,10 @@ def main():
 
     print("\nAll pairwise comparison")
     print("=" * 70)
-    print(f"Replications:          {N_REPLICATIONS}")
+    print(f"Long trajectories:     {N_REPLICATIONS}")
     print(f"Warmup weeks:          {WARMUP_WEEKS}")
-    print("Run weeks after warmup:estimated per design as M * batches")
-    print(f"Batches per replication:{BATCHES_PER_REPLICATION}")
+    print("Run weeks after warmup: estimated per design as M * batches")
+    print(f"Batches per trajectory:{BATCHES_PER_REPLICATION}")
     print("Batch length:          estimated per design with M = 5 * L_ac")
     print(f"Number of pairs (c):   {n_pairs}")
     print(f"Overall confidence:    {OVERALL_CONFIDENCE:.2%}")
@@ -794,6 +807,8 @@ def main():
             f"run weeks={info['run_weeks']}"
         )
 
+    # One single long trajectory.
+    # The batches inside the trajectory are used as the observations.
     for replication in range(1, N_REPLICATIONS + 1):
         seed = BASE_SEED + replication
         objectives = {}
@@ -882,7 +897,7 @@ def main():
     wb.remove(wb.active)
 
     write_designs_sheet(wb, individual_confidence, n_pairs, batch_info_by_design)
-    write_replications_sheet(wb, replication_rows, pair_names)
+    write_replications_sheet(wb, batch_rows, pair_names)
     write_batch_details_sheet(wb, batch_rows, pair_names)
     write_variance_reduction_sheet(wb, vr_rows)
     write_summary_sheet(wb, difference_values, individual_confidence)
