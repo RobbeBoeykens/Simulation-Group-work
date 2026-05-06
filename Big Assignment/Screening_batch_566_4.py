@@ -19,10 +19,10 @@ from simulation import Simulation
 # Factor 1 = number of urgent slots
 # Factor 2 = timing strategy for urgent slots
 # Factor 3 = appointment scheduling rule
-OUTPUT_EXCEL = "Big Assignment/Excel Files/Screening_batch_566_4_1.xlsx"
+OUTPUT_EXCEL = "Big Assignment/Excel Files/Screening_batch_566_4_1_13_16.xlsx"
 
 FACTOR_LEVELS = {
-    "urgent_slots": {"-": 14, "+": 16},
+    "urgent_slots": {"-": 13, "+": 16},
     "strategy": {"-": 1, "+": 2},
     "rule": {"-": 1, "+": 2},
 }
