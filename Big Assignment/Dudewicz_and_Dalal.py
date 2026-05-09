@@ -31,7 +31,7 @@ PILOT_WEEKS  = 2000
 # D_STAR_MIN is used instead to prevent N_i from exploding.
 # Set to the smallest practically meaningful difference in your
 # objective value (e.g. 1% of a typical mean).
-D_STAR_MIN = 0.0005
+D_STAR_MIN = 0.005
 
 
 
